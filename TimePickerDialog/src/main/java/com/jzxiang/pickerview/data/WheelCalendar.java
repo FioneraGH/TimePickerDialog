@@ -34,6 +34,4 @@ public class WheelCalendar {
     public boolean isNoRange() {
         return noRange;
     }
-
-
 }

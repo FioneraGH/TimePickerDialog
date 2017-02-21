@@ -55,6 +55,13 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"/>
+
+            <com.jzxiang.pickerview.wheel.WheelView
+                android:id="@+id/morning"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:visibility="gone" />
         </LinearLayout>
 
     </FrameLayout>

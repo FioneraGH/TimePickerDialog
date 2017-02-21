@@ -8,6 +8,7 @@ public enum Type {
     ALL,
     YEAR_MONTH_DAY,
     HOURS_MINS,
+    HOURS_MINS_HALF,
     MONTH_DAY_HOUR_MIN,
     YEAR_MONTH,
     YEAR

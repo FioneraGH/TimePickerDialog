@@ -3,8 +3,10 @@ package com.jzxiang.pickerview;
 import android.content.Context;
 import android.view.View;
 
+import com.jzxiang.pickerview.adapters.ArrayWheelAdapter;
 import com.jzxiang.pickerview.adapters.NumericWheelAdapter;
 import com.jzxiang.pickerview.config.PickerConfig;
+import com.jzxiang.pickerview.data.Type;
 import com.jzxiang.pickerview.data.source.TimeRepository;
 import com.jzxiang.pickerview.utils.PickerContants;
 import com.jzxiang.pickerview.utils.Utils;
@@ -19,8 +21,9 @@ import java.util.Calendar;
 public class TimeWheel {
     Context mContext;
 
-    WheelView year, month, day, hour, minute;
+    WheelView year, month, day, hour, minute, morning;
     NumericWheelAdapter mYearAdapter, mMonthAdapter, mDayAdapter, mHourAdapter, mMinuteAdapter;
+    ArrayWheelAdapter<String> mMorningAdapter;
 
     PickerConfig mPickerConfig;
     TimeRepository mRepository;
@@ -48,6 +51,12 @@ public class TimeWheel {
             updateMinutes();
         }
     };
+    OnWheelChangedListener morningListener = new OnWheelChangedListener() {
+        @Override
+        public void onChanged(WheelView wheel, int oldValue, int newValue) {
+            updateMorning();
+        }
+    };
 
     public TimeWheel(View view, PickerConfig pickerConfig) {
         mPickerConfig = pickerConfig;
@@ -64,6 +73,7 @@ public class TimeWheel {
         initDay();
         initHour();
         initMinute();
+        initMorning();
     }
 
 
@@ -73,10 +83,10 @@ public class TimeWheel {
         day = (WheelView) view.findViewById(R.id.day);
         hour = (WheelView) view.findViewById(R.id.hour);
         minute = (WheelView) view.findViewById(R.id.minute);
+        morning = (WheelView) view.findViewById(R.id.morning);
 
         switch (mPickerConfig.mType) {
             case ALL:
-
                 break;
             case YEAR_MONTH_DAY:
                 Utils.hideViews(hour, minute);
@@ -89,6 +99,10 @@ public class TimeWheel {
                 break;
             case HOURS_MINS:
                 Utils.hideViews(year, month, day);
+                break;
+            case HOURS_MINS_HALF:
+                Utils.hideViews(year, month, day);
+                morning.setVisibility(View.VISIBLE);
                 break;
             case YEAR:
                 Utils.hideViews(month, day, hour, minute);
@@ -159,6 +173,16 @@ public class TimeWheel {
 
     }
 
+    void initMorning() {
+        updateMorning();
+
+        mMorningAdapter = new ArrayWheelAdapter<>(mContext, new String[]{"上午", "下午"});
+        mMorningAdapter.setConfig(mPickerConfig);
+        morning.setViewAdapter(mMorningAdapter);
+        morning.setCurrentItem(0);
+    }
+
+
     void updateMonths() {
         if (month.getVisibility() == View.GONE)
             return;
@@ -212,6 +236,9 @@ public class TimeWheel {
 
         int minHour = mRepository.getMinHour(curYear, curMonth, curDay);
         int maxHour = mRepository.getMaxHour(curYear, curMonth, curDay);
+        if (mPickerConfig.mType == Type.HOURS_MINS_HALF) {
+            maxHour = 12;
+        }
 
         mHourAdapter = new NumericWheelAdapter(mContext, minHour, maxHour, PickerContants.FORMAT, mPickerConfig.mHour);
         mHourAdapter.setConfig(mPickerConfig);
@@ -241,6 +268,11 @@ public class TimeWheel {
             minute.setCurrentItem(0, false);
     }
 
+    void updateMorning(){
+        if (morning.getVisibility() == View.GONE)
+            return;
+    }
+
     public int getCurrentYear() {
         return year.getCurrentItem() + mRepository.getMinYear();
     }
@@ -268,9 +300,10 @@ public class TimeWheel {
         int curMonth = getCurrentMonth();
         int curDay = getCurrentDay();
         int curHour = getCurrentHour();
-
         return minute.getCurrentItem() + mRepository.getMinMinute(curYear, curMonth, curDay, curHour);
     }
 
-
+    public boolean getCurrentMorning() {
+        return 0 == morning.getCurrentItem();
+    }
 }

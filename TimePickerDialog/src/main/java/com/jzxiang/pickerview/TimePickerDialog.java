@@ -40,7 +40,6 @@ public class TimePickerDialog extends DialogFragment implements View.OnClickList
         super.onCreate(savedInstanceState);
         Activity activity = getActivity();
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     }
 
     @Override
@@ -69,8 +68,7 @@ public class TimePickerDialog extends DialogFragment implements View.OnClickList
     }
 
     View initView() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View view = inflater.inflate(R.layout.timepicker_layout, null);
+        View view = View.inflate(getContext(), R.layout.timepicker_layout, null);
         TextView cancel = (TextView) view.findViewById(R.id.tv_cancel);
         cancel.setOnClickListener(this);
         TextView sure = (TextView) view.findViewById(R.id.tv_sure);
@@ -126,9 +124,11 @@ public class TimePickerDialog extends DialogFragment implements View.OnClickList
         calendar.set(Calendar.HOUR_OF_DAY, mTimeWheel.getCurrentHour());
         calendar.set(Calendar.MINUTE, mTimeWheel.getCurrentMinute());
 
+        boolean morning = mTimeWheel.getCurrentMorning();
+
         mCurrentMillSeconds = calendar.getTimeInMillis();
         if (mPickerConfig.mCallBack != null) {
-            mPickerConfig.mCallBack.onDateSet(this, mCurrentMillSeconds);
+            mPickerConfig.mCallBack.onDateSet(this, mCurrentMillSeconds, morning);
         }
         dismiss();
     }
@@ -240,6 +240,4 @@ public class TimePickerDialog extends DialogFragment implements View.OnClickList
         }
 
     }
-
-
 }
